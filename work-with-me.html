@@ -125,6 +125,24 @@ body{background:var(--paper);color:var(--ink);font-family:"Instrument Sans",sans
 .row{display:flex;align-items:flex-end;gap:34px;padding:30px 80px 0 32px;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-left:32px;scroll-behavior:smooth;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .row::-webkit-scrollbar{display:none}
 .row .shop{scroll-snap-align:start}
+.ihead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.vtog{display:inline-flex;flex:none;padding:4px;border:2px solid var(--ink);border-radius:999px;background:var(--paper)}
+.vtog button{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:999px;font:600 15px/1 "Instrument Sans",sans-serif;color:var(--ink);transition:background .2s,color .2s}
+.vtog button svg{width:15px;height:15px;fill:currentColor}
+.vtog button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.vtog button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+#street[data-view=grid] .rowwrap,#street[data-view=grid] .walk,#street[data-view=grid] .walk2,#street[data-view=grid] .ctl,#street[data-view=grid] .vb,#street[data-view=block] .vgrid,#street[data-view=block] .vg{display:none}
+.vgrid{max-width:1180px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:30px 22px}
+.vcard{all:unset;cursor:pointer;display:flex;flex-direction:column;min-width:0}
+.vth{position:relative;display:block;aspect-ratio:9/16;border:2px solid var(--ink);background:var(--fill) center 30%/cover;transition:transform .25s}
+.vcard:hover .vth,.vcard:focus-visible .vth{transform:translateY(-4px)}
+.vcard:focus-visible .vth{outline:2px solid var(--ink);outline-offset:3px}
+.vth em{position:absolute;left:50%;top:50%;width:42px;height:42px;margin:-21px 0 0 -21px;border-radius:50%;border:2px solid var(--ink);background:var(--paper)}
+.vth em::after{content:"";position:absolute;left:14px;top:11px;border-left:12px solid var(--ink);border-top:8px solid transparent;border-bottom:8px solid transparent}
+.vcard b{margin-top:14px;font:400 22px/1.1 "DM Serif Display",serif}
+.vcard small{margin-top:3px;font-size:13px;color:var(--pencil)}
+
+@media (max-width:820px){.ihead{flex-direction:column;align-items:flex-start;gap:16px}.vgrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding:4px 20px 12px;scroll-padding-left:20px;scrollbar-width:none}.vgrid::-webkit-scrollbar{display:none}.vcard{flex:0 0 40%;scroll-snap-align:start}}
 .walk{height:2px;background:var(--ink);max-width:1180px;margin:0 auto}
 .walk2{max-width:1180px;margin:0 auto;height:26px;border-bottom:2px solid var(--ink);background:repeating-linear-gradient(90deg,transparent 0 118px,var(--ink) 118px 120px)}
 
