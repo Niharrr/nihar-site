@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Appearance Release and Consent</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f5f2; --card:#fff; --ink:#141414; --muted:#6b6b6b; --line:#e5e3de;
+    --accent:#141414; --accent-ink:#fff; --err:#c2362b; --ok:#1f8a4c;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .wrap{max-width:520px;margin:0 auto;padding:20px 18px 120px}
+  header{padding:8px 2px 18px}
+  .brand{font-weight:700;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:26px;line-height:1.15;margin:6px 0 6px;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:15px;line-height:1.45;margin:0}
+  .shoot{font-size:13px;color:var(--muted);margin:10px 0 0;padding:8px 12px;background:#ecebe6;border-radius:10px;display:inline-block}
+  .scroll .lead{font-weight:600;color:var(--ink)}
+  .scroll ul{margin:0 0 8px;padding-left:18px}
+  .scroll li{margin:0 0 8px;color:#2b2b2b}
+  .scroll .kv{margin:0 0 10px}
+  .scroll .kv div{margin:0 0 3px}
+  .seg{display:flex;gap:8px;margin-bottom:12px}
+  .seg button{flex:1;font:inherit;font-size:14.5px;font-weight:500;padding:12px 8px;border-radius:12px;border:1px solid var(--line);background:#fbfbfa;color:var(--ink);cursor:pointer}
+  .seg button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .guardian{display:none;border-top:1px solid var(--line);padding-top:14px;margin:4px 0 14px}
+  .guardian.show{display:block}
+  .guardian .note{font-size:13.5px;color:var(--muted);line-height:1.45;margin:0 0 12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:14px}
+  .step{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin:0 0 12px}
+  label{display:block;font-size:14px;font-weight:500;margin:0 0 6px}
+  label .opt{color:var(--muted);font-weight:400}
+  .field{margin-bottom:14px}
+  .field:last-child{margin-bottom:0}
+  input[type=text],input[type=email],input[type=tel]{
+    width:100%;font:inherit;font-size:16px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#fbfbfa;color:var(--ink);outline:none;transition:border-color .15s,background .15s}
+  input:focus{border-color:var(--ink);background:#fff}
+  input.bad{border-color:var(--err)}
+  .hint{font-size:13px;color:var(--muted);margin-top:6px}
+  .errtxt{font-size:13px;color:var(--err);margin-top:8px;display:none}
+  .terms{position:relative}
+  .scroll{max-height:46vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:6px;font-size:14.5px;line-height:1.55}
+  .scroll h3{font-size:14.5px;margin:16px 0 4px;font-weight:600}
+  .scroll h3:first-child{margin-top:0}
+  .scroll p{margin:0 0 8px;color:#2b2b2b}
+  .fade{pointer-events:none;position:absolute;left:18px;right:18px;bottom:52px;height:48px;background:linear-gradient(rgba(255,255,255,0),#fff);transition:opacity .2s}
+  .progress{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:12px}
+  .progress .bar{flex:1;height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+  .progress .bar i{display:block;height:100%;width:0;background:var(--ink);transition:width .1s}
+  .check{display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.4;padding:4px 0;cursor:pointer}
+  .check + .check{margin-top:10px}
+  .check input{appearance:none;-webkit-appearance:none;flex:0 0 22px;width:22px;height:22px;border:1.5px solid #bdbab3;border-radius:6px;margin:0;background:#fff;display:grid;place-items:center;transition:all .15s}
+  .check input:checked{background:var(--ink);border-color:var(--ink)}
+  .check input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+  .bottom{position:fixed;left:0;right:0;bottom:0;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(rgba(246,245,242,0),var(--bg) 30%)}
+  .bottom .inner{max-width:520px;margin:0 auto}
+  .btn{width:100%;font:inherit;font-size:17px;font-weight:600;padding:16px;border-radius:14px;border:0;background:var(--accent);color:var(--accent-ink);cursor:pointer;transition:opacity .15s,transform .05s}
+  .btn:active{transform:scale(.99)}
+  .btn[disabled]{opacity:.3;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+  .btnrow{display:flex;gap:10px}
+  .btnrow .btn{flex:1}
+  .why{text-align:center;font-size:13px;color:var(--muted);margin-top:8px;min-height:18px}
+
+  /* Signature sheet */
+  .overlay{position:fixed;inset:0;background:rgba(20,20,20,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
+  .overlay.show{display:flex}
+  .sheet{background:#fff;width:100%;max-width:560px;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));animation:up .22s ease-out}
+  @keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+  .sheet h2{font-size:19px;margin:0 0 4px}
+  .sheet .sub{font-size:14px;margin-bottom:14px}
+  .padbox{position:relative;border:1.5px dashed #c9c6bf;border-radius:14px;background:#fcfcfb;height:220px;touch-action:none;overflow:hidden}
+  .padbox canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+  .padbox .line{position:absolute;left:22px;right:22px;bottom:52px;border-bottom:1px solid #d8d5ce;pointer-events:none}
+  .padbox .x{position:absolute;left:22px;bottom:58px;font-size:20px;color:#b5b2aa;pointer-events:none}
+  .padbox .ph{position:absolute;inset:0;display:grid;place-items:center;color:#b5b2aa;font-size:15px;pointer-events:none;padding-bottom:40px}
+  .sheet .clear{background:none;border:0;font:inherit;font-size:14px;color:var(--muted);text-decoration:underline;padding:8px 0;cursor:pointer}
+  .sheet .meta{display:flex;justify-content:space-between;align-items:center;margin:6px 0 12px;font-size:13px;color:var(--muted)}
+  .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-3px;margin-right:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Done */
+  .done{display:none;text-align:center;padding-top:12vh}
+  .done .tick{width:72px;height:72px;border-radius:50%;background:var(--ok);display:grid;place-items:center;margin:0 auto 20px}
+  .done .tick::after{content:"";width:16px;height:30px;border:solid #fff;border-width:0 4px 4px 0;transform:rotate(45deg) translate(-2px,-3px)}
+  .done h1{margin-bottom:10px}
+  .done .btn{margin-top:28px}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="formView">
+  <header>
+    <div class="brand" data-b></div>
+    <h1>Appearance Release</h1>
+    <p class="sub">Thanks for being on camera! Fill this out so we can post your interview.</p>
+    <p class="shoot" id="shootLine"></p>
+  </header>
+
+  <section class="card">
+    <p class="step">1 &middot; Your info</p>
+    <div class="field">
+      <label for="name">Full name</label>
+      <input id="name" type="text" autocomplete="name" autocapitalize="words" placeholder="First and last name">
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@email.com">
+    </div>
+    <div class="field">
+      <label for="phone">Phone</label>
+      <input id="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="(555) 555-5555">
+      <div class="hint">Email or phone is required.</div>
+    </div>
+    <div class="field">
+      <label for="handle">Instagram or TikTok <span class="opt">(optional, so we can tag you)</span></label>
+      <input id="handle" type="text" autocapitalize="off" autocorrect="off" placeholder="@handle">
+    </div>
+    <div class="errtxt" id="infoErr"></div>
+  </section>
+
+  <section class="card terms">
+    <p class="step">2 &middot; Read the release</p>
+    <div class="scroll" id="terms"></div>
+    <div class="fade" id="fade"></div>
+    <div class="progress"><div class="bar"><i id="pbar"></i></div><span id="ptxt">Scroll to the end</span></div>
+  </section>
+
+  <section class="card">
+    <p class="step">3 &middot; Confirm</p>
+    <label style="margin-bottom:8px">Participant's age</label>
+    <div class="seg" id="ageSeg">
+      <button type="button" data-v="adult">18 or older</button>
+      <button type="button" data-v="minor">Under 18</button>
+    </div>
+    <div class="guardian" id="guardianBox">
+      <p class="note">A parent or legal guardian needs to sign on the participant's behalf.</p>
+      <div class="field">
+        <label for="gName">Parent / guardian full name</label>
+        <input id="gName" type="text" autocomplete="off" autocapitalize="words" placeholder="First and last name">
+      </div>
+      <div class="field">
+        <label for="gRel">Relationship to participant</label>
+        <input id="gRel" type="text" autocapitalize="words" placeholder="e.g. Mother, Father, Legal guardian">
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" id="agree"><span id="agreeTxt">I have read and understand this Release and agree to its terms.</span></label>
+    <label class="check" id="copyRow"><input type="checkbox" id="sendCopy" checked><span>Email me a copy</span></label>
+  </section>
+</div>
+
+<div class="bottom" id="bottomBar">
+  <div class="inner">
+    <button class="btn" id="signBtn" disabled>Sign</button>
+    <div class="why" id="why"></div>
+  </div>
+</div>
+
+<!-- Signature sheet -->
+<div class="overlay" id="overlay">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sigTitle">
+    <h2 id="sigTitle">Sign with your finger</h2>
+    <p class="sub">Signing as <b id="sigName"></b></p>
+    <div class="padbox" id="padbox">
+      <div class="ph" id="ph">Sign here</div>
+      <div class="x">&times;</div>
+      <div class="line"></div>
+      <canvas id="pad"></canvas>
+    </div>
+    <div class="meta"><span id="sigDate"></span><button class="clear" id="clearBtn">Clear</button></div>
+    <div class="errtxt" id="submitErr"></div>
+    <div class="btnrow">
+      <button class="btn ghost" id="cancelBtn">Cancel</button>
+      <button class="btn" id="submitBtn" disabled>Submit</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap done" id="doneView">
+  <div class="tick"></div>
+  <h1>You're all set</h1>
+  <p class="sub" id="doneSub">Your signed release was submitted. Thanks for being part of it!</p>
+  <button class="btn" id="againBtn">New form for the next person</button>
+</div>
+
+<script>
+(function(){
+  // =====================================================================
+  //  SETTINGS: edit these per client / shoot
+  // =====================================================================
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbys67EGLnJKDOdNOmbSnwDdvPsk7mtOCwpCwxCby0w0rBOJN14FmFiuaNIizEZX9uql/exec'; // ends in /exec
+  var C = {
+    company:   'Nakihalani Farm LLC',
+    address:   '35-218 Kihalani Homestead Road, Laupahoehoe, HI 96764',
+    contact:   '[Email]',
+    repName:   '[Name]',
+    repTitle:  '[Title]',
+    shootDate: 'October 30, 2026',
+    location:  'Washington Square Park, New York, NY'
+  };
+  // =====================================================================
+
+  document.querySelectorAll('[data-b]').forEach(function(el){ el.textContent = C.company; });
+  document.getElementById('shootLine').textContent = [C.shootDate, C.location].filter(Boolean).join('  ·  ');
+
+  // ---------- Release language (single source for the page and the PDF) ----------
+  // Block types: p (paragraph), kv (label/value list), h (heading), item (bold lead + text), bullet (bulleted item)
+  var RELEASE = [
+    {t:'p', x:'This Appearance Release and Consent (the "Release") is entered into between the company identified below (the "Company") and the individual signing below (the "Participant") in connection with a street interview recorded on the date and at the location stated below.'},
+    {t:'kv', x:[
+      ['Company', C.company + ' (the "Company")'],
+      ['Address', C.address],
+      ['Contact', C.contact],
+      ['Shoot date', C.shootDate],
+      ['Location', C.location]
+    ]},
+    {t:'p', x:'Participant should read this Release carefully before signing.'},
+    {t:'h', x:'1. Grant of Rights'},
+    {t:'p', x:'Participant grants the Company, its affiliates, licensees and assigns the irrevocable right to record, photograph and film Participant, and to use Participant\'s name, image, likeness, voice and statements as captured during the interview (collectively, the "Content"), subject to the terms below.'},
+    {t:'item', l:'Organic Use.', x:'The Company may publish, reproduce, distribute and display the Content on its own social media accounts and digital channels, on any platform now known or later developed, in perpetuity. The Company may also authorize partners and creators to share or co-post the Content.'},
+    {t:'item', l:'Paid Advertising.', x:'The Company may use the Content in paid advertisements, sponsored posts and boosted content (including TikTok Spark Ads and Meta advertisements) for a period of sixty (60) days, starting the day the first paid ad goes live. Upon expiration of this period, the Company will not commence or continue paid promotion of the Content. Organic posts published before or during this period may remain online.'},
+    {t:'item', l:'Editing.', x:'The Company may edit, crop, caption and combine the Content with music, graphics and other material at its sole discretion, provided that it will not alter the Content in a manner that materially misrepresents Participant\'s statements.'},
+    {t:'h', x:'2. Terms and Conditions'},
+    {t:'bullet', l:'Compensation.', x:'Participant acknowledges that participation is voluntary and uncompensated, and that no payment, royalty or other consideration is owed for any use of the Content.'},
+    {t:'bullet', l:'No Approval Rights.', x:'Participant waives any right to inspect or approve the Content prior to publication. The Company is under no obligation to use the Content.'},
+    {t:'bullet', l:'Ownership.', x:'All Content is the sole and exclusive property of the Company.'},
+    {t:'bullet', l:'Release of Claims.', x:'Participant releases the Company, its affiliates, licensees and assigns from any and all claims arising from use of the Content as permitted by this Release, including claims for invasion of privacy, violation of the right of publicity and defamation.'},
+    {t:'bullet', l:'Removal Requests.', x:'Participant may request removal of the Content by written notice to ' + C.contact + '. The Company will make reasonable efforts to cease paid promotion and remove the Content from its own channels within a reasonable period. The Company is not responsible for copies shared or reposted by third parties.'},
+    {t:'bullet', l:'Representations.', x:'Participant represents that they are at least eighteen (18) years of age, or that a parent or legal guardian has signed this Release below, and that no existing agreement prevents them from entering into it.'},
+    {t:'bullet', l:'Entire Agreement; Governing Law.', x:'This Release constitutes the entire agreement between the parties regarding the Content and is governed by the laws of the State of New York.'},
+    {t:'h', x:'3. Signature'},
+    {t:'p', x:'By signing below, Participant confirms that they have read and understand this Release and agree to its terms.'},
+    {t:'item', l:'Parent or Guardian Consent.', x:'If Participant is under eighteen (18) years of age, the undersigned parent or legal guardian consents to this Release on Participant\'s behalf and agrees to be bound by its terms.'}
+  ];
+  var GUARDIAN_TEXT = RELEASE[RELEASE.length-1];
+
+  var termsEl = document.getElementById('terms');
+  var out = '', inList = false;
+  RELEASE.forEach(function(b){
+    if (b.t !== 'bullet' && inList){ out += '</ul>'; inList = false; }
+    if (b.t === 'p') out += '<p>' + esc(b.x) + '</p>';
+    else if (b.t === 'h') out += '<h3>' + esc(b.x) + '</h3>';
+    else if (b.t === 'kv') out += '<div class="kv">' + b.x.map(function(r){ return '<div><span class="lead">' + esc(r[0]) + ':</span> ' + esc(r[1]) + '</div>'; }).join('') + '</div>';
+    else if (b.t === 'item') out += '<p><span class="lead">' + esc(b.l) + '</span> ' + esc(b.x) + '</p>';
+    else if (b.t === 'bullet'){ if (!inList){ out += '<ul>'; inList = true; } out += '<li><span class="lead">' + esc(b.l) + '</span> ' + esc(b.x) + '</li>'; }
+  });
+  if (inList) out += '</ul>';
+  termsEl.innerHTML = out;
+
+  // ---------- State ----------
+  var $ = function(id){ return document.getElementById(id); };
+  var readToEnd = false, age = '';
+
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function val(id){ return $(id).value.trim(); }
+  function emailOk(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+  function phoneOk(s){ return s.replace(/\D/g,'').length >= 7; }
+  function fullName(s){ return s.split(/\s+/).filter(Boolean).length >= 2; }
+
+  function onTermsScroll(){
+    var el = termsEl, max = el.scrollHeight - el.clientHeight;
+    var pct = max <= 0 ? 1 : Math.min(1, el.scrollTop / (max - 4));
+    $('pbar').style.width = (pct*100) + '%';
+    $('fade').style.opacity = pct >= 1 ? 0 : 1;
+    if (pct >= 1 && !readToEnd){ readToEnd = true; $('ptxt').textContent = 'Read'; update(); }
+  }
+  termsEl.addEventListener('scroll', onTermsScroll, {passive:true});
+  setTimeout(onTermsScroll, 50);
+
+  document.querySelectorAll('#ageSeg button').forEach(function(btn){
+    btn.addEventListener('click', function(){ setAge(btn.getAttribute('data-v')); });
+  });
+  function setAge(v){
+    age = v;
+    document.querySelectorAll('#ageSeg button').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-v') === v); });
+    $('guardianBox').classList.toggle('show', v === 'minor');
+    $('agreeTxt').textContent = v === 'minor'
+      ? 'As parent or guardian, I have read and understand this Release and consent to it on the participant\'s behalf.'
+      : 'I have read and understand this Release and agree to its terms.';
+    update();
+  }
+
+  function problems(){
+    var email = val('email'), phone = val('phone');
+    if (!fullName(val('name'))) return 'Add your full name';
+    if (!email && !phone) return 'Add an email or phone number';
+    if (email && !emailOk(email)) return 'Check your email address';
+    if (phone && !phoneOk(phone)) return 'Check your phone number';
+    if (!readToEnd) return 'Scroll through the release to continue';
+    if (!age) return 'Select the participant\'s age';
+    if (age === 'minor' && !fullName(val('gName'))) return 'Add the parent or guardian\'s full name';
+    if (age === 'minor' && !val('gRel')) return 'Add the relationship to the participant';
+    if (!$('agree').checked) return 'Check the box to agree';
+    return '';
+  }
+  function update(){
+    var p = problems();
+    $('signBtn').disabled = !!p;
+    $('why').textContent = p;
+    $('copyRow').style.display = val('email') ? '' : 'none';
+  }
+  ['name','email','phone','handle','gName','gRel'].forEach(function(id){ $(id).addEventListener('input', update); });
+  $('agree').addEventListener('change', update);
+  update();
+
+  // ---------- Signature pad ----------
+  var canvas = $('pad'), ctx = canvas.getContext('2d'), drawing = false, hasInk = false, last = null, dpr = 1;
+  function sizePad(){
+    var r = canvas.getBoundingClientRect();
+    dpr = Math.max(1, window.devicePixelRatio || 1);
+    canvas.width = Math.round(r.width * dpr);
+    canvas.height = Math.round(r.height * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#111';
+    clearPad();
+  }
+  function clearPad(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    hasInk = false; $('ph').style.display = ''; $('submitBtn').disabled = true;
+  }
+  function pt(e){ var r = canvas.getBoundingClientRect(); return {x:e.clientX - r.left, y:e.clientY - r.top, t:Date.now()}; }
+  canvas.addEventListener('pointerdown', function(e){
+    e.preventDefault(); canvas.setPointerCapture(e.pointerId);
+    drawing = true; last = pt(e);
+    ctx.beginPath(); ctx.arc(last.x, last.y, 1.2, 0, Math.PI*2); ctx.fillStyle = '#111'; ctx.fill();
+  });
+  canvas.addEventListener('pointermove', function(e){
+    if (!drawing) return; e.preventDefault();
+    var p = pt(e), d = Math.hypot(p.x-last.x, p.y-last.y), dt = Math.max(1, p.t-last.t);
+    ctx.lineWidth = Math.max(1.6, Math.min(3.4, 3.6 - (d/dt)*0.9));
+    ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke();
+    last = p;
+    if (!hasInk && d > 0){ hasInk = true; $('ph').style.display = 'none'; }
+    $('submitBtn').disabled = !hasInk;
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(function(ev){ canvas.addEventListener(ev, function(){ drawing = false; }); });
+  $('clearBtn').addEventListener('click', clearPad);
+
+  // ---------- Flow ----------
+  function fmtLocal(d){
+    return d.toLocaleString('en-US', {month:'long', day:'numeric', year:'numeric', hour:'numeric', minute:'2-digit', timeZoneName:'short'});
+  }
+  function fmtDate(d){ return d.toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'}); }
+
+  $('signBtn').addEventListener('click', function(){
+    if (problems()) return;
+    if (age === 'minor'){
+      $('sigTitle').textContent = 'Parent or guardian, sign here';
+      $('sigName').textContent = val('gName') + ' (' + val('gRel') + ') for ' + val('name');
+    } else {
+      $('sigTitle').textContent = 'Sign with your finger';
+      $('sigName').textContent = val('name');
+    }
+    $('sigDate').textContent = fmtLocal(new Date());
+    $('submitErr').style.display = 'none';
+    $('overlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(sizePad);
+  });
+  $('cancelBtn').addEventListener('click', closeSheet);
+  function closeSheet(){ $('overlay').classList.remove('show'); document.body.style.overflow = ''; }
+
+  function signatureImage(){
+    var w = canvas.width, h = canvas.height, data = ctx.getImageData(0,0,w,h).data;
+    var minX=w, minY=h, maxX=0, maxY=0;
+    for (var y=0; y<h; y+=2) for (var x=0; x<w; x+=2){
+      if (data[(y*w+x)*4+3] > 20){ if(x<minX)minX=x; if(x>maxX)maxX=x; if(y<minY)minY=y; if(y>maxY)maxY=y; }
+    }
+    if (maxX <= minX) { minX=0; minY=0; maxX=w; maxY=h; }
+    var pad = 12*dpr; minX=Math.max(0,minX-pad); minY=Math.max(0,minY-pad); maxX=Math.min(w,maxX+pad); maxY=Math.min(h,maxY+pad);
+    var cw = maxX-minX, ch = maxY-minY, scale = Math.min(1, 900/cw);
+    var o2 = document.createElement('canvas'); o2.width = Math.round(cw*scale); o2.height = Math.round(ch*scale);
+    var o = o2.getContext('2d'); o.fillStyle = '#fff'; o.fillRect(0,0,o2.width,o2.height);
+    o.drawImage(canvas, minX, minY, cw, ch, 0, 0, o2.width, o2.height);
+    return {url: o2.toDataURL('image/jpeg', 0.85), w: o2.width, h: o2.height};
+  }
+
+  function makeId(){
+    var d = new Date(), r = Math.random().toString(36).slice(2,6).toUpperCase();
+    return d.toISOString().slice(0,10).replace(/-/g,'') + '-' + r;
+  }
+
+  // ---------- PDF (mirrors the client's release document) ----------
+  function buildPdf(info){
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({unit:'pt', format:'letter'});
+    var W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight(), M = 54, y = 58;
+    var maxW = W - M*2, FS = 10, LH = 13.2;
+    function need(h){ if (y + h > H - 46){ doc.addPage(); y = M; } }
+    function font(style, size, gray){ doc.setFont('helvetica', style); doc.setFontSize(size); doc.setTextColor(gray == null ? 20 : gray); }
+
+    // Rich paragraph: bold lead followed by normal text, wrapped manually
+    function rich(lead, text, x, width){
+      var words = [], line = [], lines = [], lw = 0;
+      if (lead) lead.split(' ').forEach(function(w){ words.push({w:w, b:true}); });
+      text.split(' ').forEach(function(w){ words.push({w:w, b:false}); });
+      doc.setFontSize(FS);
+      var space = (function(){ doc.setFont('helvetica','normal'); return doc.getTextWidth(' '); })();
+      words.forEach(function(o){
+        doc.setFont('helvetica', o.b ? 'bold' : 'normal');
+        var ww = doc.getTextWidth(o.w);
+        if (line.length && lw + space + ww > width){ lines.push(line); line = []; lw = 0; }
+        o.width = ww; line.push(o); lw += (line.length > 1 ? space : 0) + ww;
+      });
+      if (line.length) lines.push(line);
+      need(lines.length * LH);
+      lines.forEach(function(l){
+        var cx = x;
+        l.forEach(function(o, i){
+          doc.setFont('helvetica', o.b ? 'bold' : 'normal'); doc.setTextColor(25);
+          doc.text(o.w, cx, y); cx += o.width + space;
+        });
+        y += LH;
+      });
+    }
+
+    font('bold', 15); doc.text('Appearance Release and Consent', W/2, y, {align:'center'}); y += 26;
+
+    RELEASE.forEach(function(b){
+      if (b === GUARDIAN_TEXT) return; // printed in the guardian section
+      if (b.t === 'p'){ rich('', b.x, M, maxW); y += 6; }
+      else if (b.t === 'h'){ need(/^3\./.test(b.x) ? 200 : 30); y += 4; font('bold', 10.5); doc.text(b.x, M, y); y += 15; }
+      else if (b.t === 'kv'){ b.x.forEach(function(r){ rich(r[0] + ':', r[1], M, maxW); y += 1.5; }); y += 5; }
+      else if (b.t === 'item'){ rich(b.l, b.x, M, maxW); y += 6; }
+      else if (b.t === 'bullet'){
+        var y0 = y; rich(b.l, b.x, M + 14, maxW - 14);
+        font('normal', FS, 25); doc.text('•', M + 4, y0 - (y - y0 > LH*0 ? 0 : 0));
+        y += 5;
+      }
+    });
+
+    // Signature fields
+    var sig = info.sig;
+    function sigImg(maxWpt, maxHpt){ var sw = Math.min(maxWpt, sig.w), sh = sw*sig.h/sig.w; if (sh > maxHpt){ sh = maxHpt; sw = sh*sig.w/sig.h; } return {w:sw, h:sh}; }
+    function field(label, value, x, width, opts){
+      opts = opts || {};
+      var top = y;
+      if (opts.image){ var d = sigImg(width - 6, 40); doc.addImage(sig.url, 'JPEG', x + 2, top - d.h - 2, d.w, d.h); }
+      else if (value){ font('normal', 11, 15); doc.text(String(value), x + 2, top - 5); }
+      doc.setDrawColor(120); doc.setLineWidth(0.7); doc.line(x, top, x + width, top);
+      font('normal', 8.5, 110); doc.text(label, x, top + 11);
+    }
+    var col2 = W - M - 150, colW = col2 - M - 24;
+    var adult = !info.minor;
+
+    y += 26; field('Full name', info.name, M, maxW);
+    y += 34; field('Email or phone', [info.email, info.phone].filter(Boolean).join('  |  '), M, maxW);
+    y += 62;
+    field('Signature', '', M, colW, {image: adult});
+    field('Date', adult ? info.signedDate : '', col2, 150);
+    y += 36;
+
+    // Parent / guardian
+    need(140);
+    rich(GUARDIAN_TEXT.l, GUARDIAN_TEXT.x, M, maxW);
+    y += 26;
+    field('Parent / guardian name', info.minor ? info.guardianName : '', M, colW);
+    field('Relationship', info.minor ? info.guardianRelationship : '', col2, 150);
+    y += 62;
+    field('Signature', '', M, colW, {image: info.minor});
+    field('Date', info.minor ? info.signedDate : '', col2, 150);
+    y += 30;
+
+    need(40);
+    font('normal', FS, 25); doc.text('Company Representative: ' + C.repName + ', ' + C.repTitle + ', ' + C.company, M, y); y += 22;
+
+    // Audit trail
+    need(40);
+    font('normal', 8, 130);
+    var who = info.minor ? (info.guardianName + ' (' + info.guardianRelationship + ') on behalf of ' + info.name) : info.name;
+    doc.text('Signed electronically by ' + who + ' on ' + info.signedAtLocal + '.', M, y); y += 11;
+    var extra = 'Form ID ' + info.formId + '  |  ' + info.signedAtIso + (info.handle ? '  |  Social handle ' + info.handle : '');
+    doc.text(extra, M, y);
+
+    var pages = doc.getNumberOfPages();
+    for (var i=1; i<=pages; i++){
+      doc.setPage(i); font('normal', 7.5, 160);
+      doc.text('Appearance Release and Consent  |  ' + C.company + '  |  ' + info.formId + '  |  Page ' + i + ' of ' + pages, M, H - 26);
+    }
+    return doc.output('datauristring').split(',')[1];
+  }
+
+  $('submitBtn').addEventListener('click', function(){
+    if (!hasInk) return;
+    var btn = $('submitBtn');
+    btn.disabled = true; $('cancelBtn').disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Submitting';
+    $('submitErr').style.display = 'none';
+
+    var now = new Date(), minor = age === 'minor';
+    var info = {
+      name: val('name'), email: val('email'), phone: val('phone'), handle: val('handle'),
+      minor: minor, guardianName: minor ? val('gName') : '', guardianRelationship: minor ? val('gRel') : '',
+      sendCopy: $('sendCopy').checked && !!val('email'),
+      signedAtLocal: fmtLocal(now), signedDate: fmtDate(now), signedAtIso: now.toISOString(),
+      formId: makeId(), sig: signatureImage()
+    };
+    var pdf;
+    try { pdf = buildPdf(info); }
+    catch(err){ console.error(err); return fail('Could not create the document. Please try again.'); }
+
+    var payload = {name:info.name, email:info.email, phone:info.phone, handle:info.handle, sendCopy:info.sendCopy,
+                   minor:info.minor, guardianName:info.guardianName, guardianRelationship:info.guardianRelationship,
+                   signedAtLocal:info.signedAtLocal, formId:info.formId, pdfBase64:pdf};
+
+    if (ENDPOINT.indexOf('https://script.google.com/') !== 0) return fail('This form is not connected yet (missing endpoint).');
+    payload.company = C.company; payload.shootDate = C.shootDate; payload.location = C.location;
+    fetch(ENDPOINT, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload)})
+      .then(function(r){ return r.json(); })
+      .then(function(res){ if (res && res.ok) done(info); else fail((res && res.error) || 'Something went wrong. Please try again.'); })
+      .catch(function(){ fail('Could not send. Check your connection and try again.'); });
+  });
+
+  function fail(msg){
+    var e = $('submitErr'); e.textContent = msg; e.style.display = 'block';
+    $('submitBtn').disabled = false; $('cancelBtn').disabled = false; $('submitBtn').textContent = 'Submit';
+  }
+  function done(info){
+    closeSheet();
+    $('formView').style.display = 'none'; $('bottomBar').style.display = 'none';
+    $('doneView').style.display = 'block';
+    $('doneSub').textContent = info.sendCopy
+      ? 'Your signed release was submitted, and a copy is on its way to ' + info.email + '.'
+      : 'Your signed release was submitted. Thanks for being part of it!';
+    window.scrollTo(0,0);
+  }
+  $('againBtn').addEventListener('click', function(){
+    ['name','email','phone','handle','gName','gRel'].forEach(function(id){ $(id).value=''; });
+    $('agree').checked = false; $('sendCopy').checked = true;
+    age = ''; document.querySelectorAll('#ageSeg button').forEach(function(b){ b.classList.remove('on'); });
+    $('guardianBox').classList.remove('show');
+    readToEnd = false; termsEl.scrollTop = 0; $('ptxt').textContent = 'Scroll to the end'; $('pbar').style.width = '0';
+    $('submitBtn').textContent = 'Submit'; $('cancelBtn').disabled = false;
+    $('doneView').style.display = 'none'; $('formView').style.display = ''; $('bottomBar').style.display = '';
+    window.scrollTo(0,0); onTermsScroll(); update();
+  });
+})();
+</script>
+</body>
+</html>
