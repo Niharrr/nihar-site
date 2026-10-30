@@ -311,7 +311,7 @@ body.wwm{background:var(--paper);color:var(--ink)}
 </style></head><body class="wwm"><div class="wtop"><a href="index.html">Nihar Raval</a><a href="index.html#success">Case studies</a></div>
 <section class="contact" id="contact">
   <div class="cintro"><h2>Work with me.</h2><p>Tell me a bit about your brand and I&rsquo;ll get back to you soon.</p><p class="cmail">Or email <a href="mailto:nihar.raval94@gmail.com">nihar.raval94@gmail.com</a></p></div>
-  <form class="cform" id="cform" novalidate>
+  <form class="cform" id="cform" action="https://formspree.io/f/mrpplvrz" method="POST" novalidate>
     <div class="row2"><label>Full name<input name="name" required autocomplete="name"></label><label>Company<input name="company" autocomplete="organization"></label></div>
     <div class="row2"><label>Work email<input name="email" type="email" required autocomplete="email"></label><label><span>Phone <em>(optional)</em></span><input name="phone" type="tel" autocomplete="tel"></label></div>
     <label>Website or Instagram handle<input name="site"></label>
@@ -334,17 +334,26 @@ body.wwm{background:var(--paper);color:var(--ink)}
       if(c.value.toLowerCase().replace(/[^a-z]+/g,'-').replace(/^-|-$/g,'')===want){ c.checked=true; c.dispatchEvent(new Event('change',{bubbles:true})); }
     });
   })();
-  /* contact form: composes an email to Nihar */
+  /* contact form: sends directly through Formspree */
   (function(){
     var f=document.getElementById('cform'), note=document.getElementById('cnote'); if(!f) return;
-    f.addEventListener('submit',function(e){ e.preventDefault();
+    f.addEventListener('submit',async function(e){ e.preventDefault();
+      var btn=f.querySelector('button[type="submit"]'); if(btn.disabled) return;
       var d=new FormData(f), name=(d.get('name')||'').trim(), email=(d.get('email')||'').trim();
-      if(!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ note.textContent='Please add your name and a valid email.'; (name?f.email:f.name).focus(); return; }
-      var sv=d.getAll('services').join(', ')||'Not specified';
-      var body=['Name: '+name,'Company: '+(d.get('company')||''),'Email: '+email,'Phone: '+(d.get('phone')||''),'Website or Instagram: '+(d.get('site')||''),'Looking for: '+sv,'Monthly budget: '+(d.get('budget')||''),'Start: '+(d.get('when')||''),'','Notes:',(d.get('notes')||'')].join('\n');
+      if(!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ note.textContent='Please add your name and a valid email.'; f.elements.namedItem(name?'email':'name').focus(); return; }
       var subj='New project inquiry'+(d.get('company')?' from '+d.get('company'):' from '+name);
-      location.href='mailto:nihar.raval94@gmail.com?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(body);
-      note.textContent='Opening your email app with everything filled in. Just hit send.';
+      d.set('services',d.getAll('services').join(', ')||'Not specified');
+      d.set('subject',subj);
+      btn.disabled=true; btn.textContent='Sending…'; f.setAttribute('aria-busy','true'); note.textContent='';
+      try {
+        var response=await fetch(f.action,{method:'POST',body:d,headers:{'Accept':'application/json'}});
+        if(!response.ok) throw new Error('Submission failed');
+        f.reset(); note.textContent='Thanks, I’ll be in touch';
+      } catch(error) {
+        note.textContent='Your message couldn’t be sent. Please try again or email nihar.raval94@gmail.com.';
+      } finally {
+        btn.disabled=false; btn.textContent='Send'; f.removeAttribute('aria-busy');
+      }
     });
   })();
 
